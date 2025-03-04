@@ -25,9 +25,11 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    # Set environment variables for the test
-    - name: Set environment variables
-      run: echo "BASE_URL=https://app.simplenight.com/" >> $GITHUB_ENV
+    - name: Set environment variables from Secrets
+      run: |
+        echo "DEV_BASE_URL=${{ secrets.DEV_BASE_URL }}" >> $GITHUB_ENV
+        echo "STAGING_BASE_URL=${{ secrets.STAGING_BASE_URL }}" >> $GITHUB_ENV
+        echo "ENV=${{ secrets.ENV }}" >> $GITHUB_ENV
 
     - name: Run Playwright Tests in dev
       run: npm run test:dev
