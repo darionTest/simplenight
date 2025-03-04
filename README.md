@@ -35,7 +35,9 @@ npm install
 npx playwright install
 ```
 #"Sometimes Playwright browsers are not installed automatically, so you can install them by running this command:"
-
+```sh
+npx playwright install chromium
+```
 
 ### Running tests locally
 By default, Playwright tests run headless (without opening a browser window). This is set in the Playwright configuration. If you want to run the tests with visible browsers, you can modify the configuration, but for CI purposes, it is set to run headless by default.
