@@ -1,0 +1,23 @@
+{
+  "category": "hotels",
+  "destiny": {
+    "city": "Miami",
+    "label": "Miami"
+  },
+  "dates": {
+    "start": "2025-5-21",
+    "end": "2025-5-22",
+    "month": "May"  
+  },
+  "guests": {
+    "adults": 0,
+    "children": 1
+  },
+  "filters": {
+    "priceMin": 100,
+    "priceMax": 500,
+    "ratingMin": 7,
+    "checkbox": "7+",
+    "option": "map"
+  }
+}
