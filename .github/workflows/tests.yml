@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Seleccione el ambiente"
+        required: true
+        default: "DEV"
+        type: choice
+        options:
+          - DEV
+          - STG
 
 jobs:
   test:
@@ -27,11 +36,14 @@ jobs:
 
     - name: Set environment variables from Secrets
       run: |
-        echo "DEV_BASE_URL=${{ secrets.DEV_BASE_URL }}" >> $GITHUB_ENV
-        echo "STAGING_BASE_URL=${{ secrets.STAGING_BASE_URL }}" >> $GITHUB_ENV
-        echo "ENV=${{ secrets.ENV }}" >> $GITHUB_ENV
+        echo "ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        if [ "${{ github.event.inputs.environment }}" == "STG" ]; then
+          echo "BASE_URL=${{ secrets.STAGING_BASE_URL }}" >> $GITHUB_ENV
+        else
+          echo "BASE_URL=${{ secrets.DEV_BASE_URL }}" >> $GITHUB_ENV
+        fi
 
-    - name: Run Playwright Tests in dev
+    - name: Run Playwright Tests
       run: npm run test:dev
 
     - uses: actions/upload-artifact@v4
