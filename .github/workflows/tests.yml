@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Seleccionar ambiente (DEV o STAGING)'
+        required: true
+        default: 'DEV'
+        type: choice
+        options:
+          - DEV
+          - STAGING
 
 jobs:
   test:
@@ -29,8 +38,27 @@ jobs:
       run: |
         echo "DEV_BASE_URL=${{ secrets.DEV_BASE_URL }}" >> $GITHUB_ENV
         echo "STAGING_BASE_URL=${{ secrets.STAGING_BASE_URL }}" >> $GITHUB_ENV
-        echo "ENV=${{ secrets.ENV }}" >> $GITHUB_ENV
-    - name: Run Playwright Tests in dev
+
+    - name: Determine Environment
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        else
+          echo "ENV=DEV" >> $GITHUB_ENV
+        fi
+
+    - name: Set BASE_URL
+      run: |
+        if [ "$ENV" == "STAGING" ]; then
+          echo "BASE_URL=$STAGING_BASE_URL" >> $GITHUB_ENV
+        else
+          echo "BASE_URL=$DEV_BASE_URL" >> $GITHUB_ENV
+        fi
+
+    - name: Debug Environment Variables
+      run: echo "Running tests in environment: $ENV with BASE_URL: $BASE_URL"
+
+    - name: Run Playwright Tests
       run: npm run test:dev
 
     - uses: actions/upload-artifact@v4
