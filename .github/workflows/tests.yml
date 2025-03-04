@@ -15,18 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Cache Node.js modules
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-        cache: 'npm'
 
     - name: Install dependencies
       run: npm ci
@@ -34,10 +25,11 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    # Set environment variables for the test
-    - name: Set environment variables
-      run: echo "BASE_URL=https://app.simplenight.com/" >> $GITHUB_ENV
-
+    - name: Set environment variables from Secrets
+      run: |
+        echo "DEV_BASE_URL=${{ secrets.DEV_BASE_URL }}" >> $GITHUB_ENV
+        echo "STAGING_BASE_URL=${{ secrets.STAGING_BASE_URL }}" >> $GITHUB_ENV
+        echo "ENV=${{ secrets.ENV }}" >> $GITHUB_ENV
     - name: Run Playwright Tests in dev
       run: npm run test:dev
 
