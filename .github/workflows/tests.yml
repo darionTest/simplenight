@@ -5,7 +5,7 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  workflow_dispatch:  # This allows you to manually trigger the workflow
+  workflow_dispatch:
 
 jobs:
   test:
@@ -13,27 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout repository
     - uses: actions/checkout@v4
 
-    # Set up Node.js environment
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
 
-    # Install Node.js dependencies
     - name: Install dependencies
       run: npm ci
 
-    # Install Playwright Browsers
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    # Run Playwright tests in dev environment
+    # Set environment variables for the test
+    - name: Set environment variables
+      run: echo "BASE_URL=https://app.simplenight.com/" >> $GITHUB_ENV
+
     - name: Run Playwright Tests in dev
       run: npm run test:dev
 
-    # Upload Playwright report as an artifact
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
